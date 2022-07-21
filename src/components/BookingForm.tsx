@@ -183,11 +183,11 @@ const BookingForm = (props: { min: number, max: number }) => {
                         options={APARTMENT_TYPES}
                         value={apartmentType}
                         onChange={handleChange}/>
+                    <ApartmentTypeInputClass
+                        options={APARTMENT_TYPES}
+                        value={apartmentType}
+                        onChange={handleChange}/>
                 </div>
-                <ApartmentTypeInputClass
-                    options={APARTMENT_TYPES}
-                    value={apartmentType}
-                    onChange={handleChange}/>
                 <div>
                     {!isReserved && randomOccupancy && <button onClick={onSubmitReservation} type="submit">Reserve</button>}
                     {isReserved && <p>Thank you!</p>}
