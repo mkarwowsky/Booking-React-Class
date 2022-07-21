@@ -3,6 +3,7 @@ import "./BookingForm.scss"
 import {useEffect, useState} from "react";
 import PrintReservation from "./PrintReservation";
 import ApartmentTypeInput from "./ApartmentTypeInput";
+import ApartmentTypeInputClass from "./ApartmentTypeInputClass"
 
 export enum FIELD_TYPES {
     START_DATE = "START_DATE",
@@ -62,18 +63,10 @@ const BookingForm = (props: { min: number, max: number }) => {
 
     useEffect(() => {
         const isShouldBeCleaned = !isReserved && !randomOccupancy;
-        if (prevPickedField === FIELD_TYPES.START_DATE && isShouldBeCleaned) {
-            cleanInput('startDate')
-        }
-        if (prevPickedField === FIELD_TYPES.END_DATE && isShouldBeCleaned) {
-            cleanInput('endDate')
-        }
-        if (prevPickedField === FIELD_TYPES.GUESTS_AMOUNT && isShouldBeCleaned) {
-            cleanInput('guestsAmount')
-        }
-        if (prevPickedField === FIELD_TYPES.APARTMENT_TYPES && isShouldBeCleaned) {
-            setApartmentType("BASIC");
-        }
+        if (prevPickedField === FIELD_TYPES.START_DATE && isShouldBeCleaned) cleanInput('startDate')
+        if (prevPickedField === FIELD_TYPES.END_DATE && isShouldBeCleaned) cleanInput('endDate')
+        if (prevPickedField === FIELD_TYPES.GUESTS_AMOUNT && isShouldBeCleaned) cleanInput('guestsAmount')
+        if (prevPickedField === FIELD_TYPES.APARTMENT_TYPES && isShouldBeCleaned) setApartmentType("BASIC");
     }, [randomOccupancy])
 
     useEffect(() => {
@@ -191,6 +184,10 @@ const BookingForm = (props: { min: number, max: number }) => {
                         value={apartmentType}
                         onChange={handleChange}/>
                 </div>
+                <ApartmentTypeInputClass
+                    options={APARTMENT_TYPES}
+                    value={apartmentType}
+                    onChange={handleChange}/>
                 <div>
                     {!isReserved && randomOccupancy && <button onClick={onSubmitReservation} type="submit">Reserve</button>}
                     {isReserved && <p>Thank you!</p>}

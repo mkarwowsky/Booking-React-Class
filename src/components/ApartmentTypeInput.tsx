@@ -1,7 +1,4 @@
-import {useState} from "react";
 import "./BookingForm.scss"
-import {APARTMENT_TYPES} from "./BookingForm";
-
 
 const ApartmentTypeInput = (props: { value: string, options: string[], onChange: Function }) => {
     const handleChange = (event: React.FormEvent<HTMLSelectElement>) => {

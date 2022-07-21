@@ -22,7 +22,6 @@ const PrintReservation = (props: { reservationData?: ItemReservationData, isRese
                     <div className="print-reservation__body-details-field">
                         <div>Amount of guests:</div>
                         <div>{props.reservationData?.guestsAmount}</div>
-
                     </div>
                     <div className="print-reservation__body-details-field">
                         <div>Apartment:</div>
