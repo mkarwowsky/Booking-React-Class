@@ -3,13 +3,13 @@ import {ItemReservationData} from "./BookingForm"
 
 import "./PrintReservation.scss"
 
-type ReservationDetails = {
-    reservationData: ItemReservationData;
-    isReserved: boolean
+type reservationData = {
+    isReserved: boolean;
+    reservationData?: ItemReservationData;
 }
 
-class PrintReservationClass extends React.Component<ReservationDetails> {
-    constructor(props: ReservationDetails) {
+class PrintReservationClass extends React.Component<reservationData> {
+    constructor(props: reservationData) {
         super(props);
     }
 

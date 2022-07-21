@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import PrintReservation from "./PrintReservation";
 import ApartmentTypeInput from "./ApartmentTypeInput";
 import ApartmentTypeInputClass from "./ApartmentTypeInputClass"
+import PrintReservationClass from "./PrintReservationClass";
 
 export enum FIELD_TYPES {
     START_DATE = "START_DATE",
@@ -195,6 +196,10 @@ const BookingForm = (props: { min: number, max: number }) => {
                 </div>
             </form>
             <PrintReservation
+                reservationData={reservationData}
+                isReserved={isReserved}
+            />
+            <PrintReservationClass
                 reservationData={reservationData}
                 isReserved={isReserved}
             />
