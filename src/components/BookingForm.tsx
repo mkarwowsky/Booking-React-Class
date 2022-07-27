@@ -1,10 +1,9 @@
-import "./BookingForm.scss"
-
 import {useEffect, useState} from "react";
 import PrintReservation from "./PrintReservation";
 import ApartmentTypeInput from "./ApartmentTypeInput";
 import ApartmentTypeInputClass from "./ApartmentTypeInputClass"
 import PrintReservationClass from "./PrintReservationClass";
+import {makeStyles} from "@mui/styles";
 
 export enum FIELD_TYPES {
     START_DATE = "START_DATE",
@@ -16,26 +15,68 @@ export enum FIELD_TYPES {
 export interface ItemReservationData {
     startDate: string,
     endDate: string,
-    guestsAmount: string,
-    apartmentType: string
+    guestsAmount: number,
+    apartmentType: APARTMENT_TYPES
 }
 
-export const APARTMENT_TYPES = ["BASIC", "SILVER", "GOLD", "PRESIDENTIAL"];
+export enum APARTMENT_TYPES {
+    BASIC = "BASIC",
+    SILVER = "SILVER",
+    GOLD = "GOLD",
+    PRESIDENTIAL = "PRESIDENTIAL"
+};
+
+export const useStyles = makeStyles({
+    bookingForm__body: {
+        backgroundColor: "#36393f",
+        border: "1px solid #36393f",
+        borderRadius: "0.2rem",
+        padding: "2rem"
+    },
+    bookingForm__bodyHeader: {
+        fontFamily: "'Poppins'"
+    },
+    bookingForm__bodyGrid: {
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gridTemplateRows: "1fr 1fr",
+        gridGap: "0.6rem",
+        margin: "1rem"
+    },
+    bookingForm__error: {
+        fontSize: "calc(0.5rem + 0.4vw)",
+        color: "orange",
+        animationName: "example",
+        animationDuration: "3s"
+    },
+    "@keyframes example": {
+        from: {color: "orange"},
+        to: {color: "#36393f"}
+    },
+    bookingForm__inputField: {
+        border: "1px solid",
+        borderRadius: "0.1rem",
+        fontFamily: "'Roboto'",
+        fontSize: "calc(0.35rem + 0.4vw)"
+    }
+});
 
 const BookingForm = (props: { min: number, max: number }) => {
+    const classes = useStyles();
     const startDate = new Date().toISOString().split('T')[0];
     const [newStartDate, setNewStartDate] = useState('');
     const [endDate, setEndDate] = useState(newStartDate);
     const [reservationData, setReservationData] = useState<ItemReservationData>();
     const [isReserved, setIsReserved] = useState<boolean>(false);
     const [prevPickedField, setPrevPickedField] = useState<FIELD_TYPES>(FIELD_TYPES.START_DATE);
-    const [randomOccupancy, setRandomOccupancy] = useState(true);
-    const [apartmentType, setApartmentType] = useState<string>("BASIC");
+    const [occupancy, setOccupancy] = useState(true);
+    const [apartmentType, setApartmentType] = useState<APARTMENT_TYPES>(APARTMENT_TYPES.BASIC);
+    const [guestsAmount, setGuestsAmount] = useState<number>(0);
 
     const [enteredData, setEnteredData] = useState<ItemReservationData>({
         startDate: newStartDate,
         endDate: endDate,
-        guestsAmount: '',
+        guestsAmount: guestsAmount,
         apartmentType: apartmentType
     });
 
@@ -43,32 +84,31 @@ const BookingForm = (props: { min: number, max: number }) => {
         if (newStartDate > endDate) {
             setEndDate(newStartDate);
             setEnteredData({...enteredData, endDate: newStartDate})
-            let date_input = document.getElementById('endDate')
-            // @ts-ignore
-            date_input.value = newStartDate;
         }
     }, [newStartDate])
 
     useEffect(() => {
+        setEnteredData({...enteredData, guestsAmount: guestsAmount})
+    }, [guestsAmount])
+
+    useEffect(() => {
         setTimeout(() => {
-            setRandomOccupancy(true);
+            setOccupancy(true);
         }, 3000);
     }, [enteredData])
 
-    const cleanInput = (elementToClear: string) => {
-        let date_input = document.getElementById(elementToClear)
-        // @ts-ignore
-        date_input.value = '';
-        setEnteredData({...enteredData, [elementToClear]: ''})
+    const createRandomOcuppacy = () => {
+        let randomOccupacy = Math.random() < 0.5;
+        setOccupancy(randomOccupacy);
     }
 
     useEffect(() => {
-        const isShouldBeCleaned = !isReserved && !randomOccupancy;
-        if (prevPickedField === FIELD_TYPES.START_DATE && isShouldBeCleaned) cleanInput('startDate')
-        if (prevPickedField === FIELD_TYPES.END_DATE && isShouldBeCleaned) cleanInput('endDate')
-        if (prevPickedField === FIELD_TYPES.GUESTS_AMOUNT && isShouldBeCleaned) cleanInput('guestsAmount')
-        if (prevPickedField === FIELD_TYPES.APARTMENT_TYPES && isShouldBeCleaned) setApartmentType("BASIC");
-    }, [randomOccupancy])
+        const shouldBeCleaned = !isReserved && !occupancy;
+        if (prevPickedField === FIELD_TYPES.START_DATE && shouldBeCleaned) setNewStartDate('');
+        if (prevPickedField === FIELD_TYPES.END_DATE && shouldBeCleaned) setEndDate('');
+        if (prevPickedField === FIELD_TYPES.GUESTS_AMOUNT && shouldBeCleaned) setGuestsAmount(0);
+        if (prevPickedField === FIELD_TYPES.APARTMENT_TYPES && shouldBeCleaned) setApartmentType(APARTMENT_TYPES.BASIC);
+    }, [occupancy])
 
     useEffect(() => {
         onChangeApartmentType(apartmentType);
@@ -96,14 +136,15 @@ const BookingForm = (props: { min: number, max: number }) => {
 
     const onChangeGuestsAmount = (event: React.FormEvent<HTMLInputElement>) => {
         setPrevPickedField(FIELD_TYPES.GUESTS_AMOUNT);
-        const guestsAmountValue = event.currentTarget.value;
+        const guestsAmountValue = event.currentTarget.valueAsNumber;
+        setGuestsAmount(guestsAmountValue);
         setEnteredData({
             ...enteredData,
-            guestsAmount: guestsAmountValue
+            guestsAmount: guestsAmount
         })
     }
 
-    const onChangeApartmentType = (apartmentType: string) => {
+    const onChangeApartmentType = (apartmentType: APARTMENT_TYPES) => {
         setPrevPickedField(FIELD_TYPES.APARTMENT_TYPES);
         setEnteredData({
             ...enteredData,
@@ -129,14 +170,14 @@ const BookingForm = (props: { min: number, max: number }) => {
             apartmentType: enteredData.apartmentType
         }
 
-        const isFormFulfilled = (enteredData.startDate !== '' && enteredData.endDate !== '' && enteredData.guestsAmount !== '');
+        const isFormFulfilled = (enteredData.startDate !== '' && enteredData.endDate !== '' && enteredData.guestsAmount !== null);
 
         if (isFormFulfilled) {
-            setRandomOccupancy(Math.random() < 0.5)
+            createRandomOcuppacy();
             setIsReserved(false);
-        } else setRandomOccupancy(false);
+        } else setOccupancy(false);
 
-        setIsReserved(randomOccupancy);
+        setIsReserved(occupancy);
 
         if (isFormFulfilled) {
             onSaveReservationData(reservationData);
@@ -149,50 +190,53 @@ const BookingForm = (props: { min: number, max: number }) => {
         }
     }
 
-    const handleChange = (apartmentType: string) => setApartmentType(apartmentType);
-    const onSubmitReservation = () => setRandomOccupancy(Math.random() < 0.5);
+    const handleChangeApartmentType = (apartmentType: APARTMENT_TYPES) => setApartmentType(apartmentType);
 
     return <div>
-        <div className="booking-form__body">
-            <div className="booking-form__body-header">
+        <div className={classes.bookingForm__body}>
+            <div className={classes.bookingForm__bodyHeader}>
                 Booking is our mission!
             </div>
             <form onSubmit={submitHandler}>
-                <div className="booking-form__body-grid">
+                <div className={classes.bookingForm__bodyGrid}>
                     <input id="startDate"
-                           className="booking-form__input-field"
+                           className={classes.bookingForm__inputField}
                            type="date"
                            min={startDate}
+                           value={newStartDate}
                            required
                            onChange={onChangeStartDate}/>
                     <input id="endDate"
-                           className="booking-form__input-field"
+                           className={classes.bookingForm__inputField}
                            type="date"
                            min={newStartDate}
+                           value={endDate}
                            required
                            onChange={onChangeEndDate}/>
                     <input id="guestsAmount"
-                           className="booking-form__input-field"
+                           className={classes.bookingForm__inputField}
                            type="number"
                            placeholder='Guests Amount'
                            min={props.min}
                            max={props.max}
+                           value={guestsAmount}
                            required
-                           value={enteredData.guestsAmount}
                            onChange={onChangeGuestsAmount}/>
                     <ApartmentTypeInput
-                        options={APARTMENT_TYPES}
+                        options={Object.keys(APARTMENT_TYPES)}
                         value={apartmentType}
-                        onChange={handleChange}/>
+                        onChange={handleChangeApartmentType}/>
                     <ApartmentTypeInputClass
-                        options={APARTMENT_TYPES}
+                        options={Object.keys(APARTMENT_TYPES)}
                         value={apartmentType}
-                        onChange={handleChange}/>
+                        onChange={handleChangeApartmentType}/>
                 </div>
                 <div>
-                    {!isReserved && randomOccupancy && <button onClick={onSubmitReservation} type="submit">Reserve</button>}
+                    {!isReserved && occupancy &&
+                        <button onClick={createRandomOcuppacy} type="submit">Reserve</button>}
                     {isReserved && <p>Thank you!</p>}
-                    {!isReserved && !randomOccupancy && <p className="booking-form__error">Reservation is impossible for these parameters.</p>}
+                    {!isReserved && !occupancy &&
+                        <p className={classes.bookingForm__error}>Reservation is impossible for these parameters.</p>}
                 </div>
             </form>
             <PrintReservation

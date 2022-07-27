@@ -1,12 +1,19 @@
-import "./BookingForm.scss"
+import {APARTMENT_TYPES, useStyles} from "./BookingForm";
 
-const ApartmentTypeInput = (props: { value: string, options: string[], onChange: Function }) => {
+type ApartmentType = {
+    value: APARTMENT_TYPES;
+    options: string[];
+    onChange: Function;
+}
+
+const ApartmentTypeInput = (props: ApartmentType) => {
+    const classes = useStyles();
     const handleChange = (event: React.FormEvent<HTMLSelectElement>) => {
         props.onChange(event.currentTarget.value);
     };
 
     return (
-        <select className="booking-form__input-field" value={props.value} onChange={handleChange}>
+        <select className={classes.bookingForm__inputField} value={props.value} onChange={handleChange}>
             {props.options.map((option: string, index) => (
                 <option key={index} value={option}>{option}</option>
             ))}

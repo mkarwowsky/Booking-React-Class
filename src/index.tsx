@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.scss';
-import App from './App';
+import BookingForm from "./components/BookingForm";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -16,6 +16,10 @@ root.render(
           rel="stylesheet"
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
       />
-    <App />
+      <div className="App">
+          <div className="App-header">
+              <BookingForm min={1} max={99}/>
+          </div>
+      </div>
   </React.StrictMode>
 );
